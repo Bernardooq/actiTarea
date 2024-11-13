@@ -11,6 +11,11 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+      - name: Install cqlsh
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-pip
+          pip3 install cqlsh
       - name: Wait for Cassandra to start
         run: |
           echo "Waiting for Cassandra to start..."
@@ -30,10 +35,11 @@ jobs:
       - name: Check cqlsh version
         run: cqlsh --version
       - name: Create keyspace
-        run: 'cqlsh -e "CREATE KEYSPACE test WITH replication = {''class'': ''SimpleStrategy'', ''replication_factor'': 1};"'
+        run: 'cqlsh -e "CREATE KEYSPACE test WITH replication = {''class'': ''SimpleStrategy'', ''replication_factor'': 1};"''
       - name: Create table
         run: cqlsh -e "CREATE TABLE test.users (id int PRIMARY KEY, name text);"
       - name: Insert data
         run: cqlsh -e "INSERT INTO test.users (id, name) VALUES (1, 'John');"
       - name: Select data
         run: cqlsh -e "SELECT * FROM test.users;"
+
