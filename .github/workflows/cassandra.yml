@@ -1,14 +1,20 @@
 on: push
 
 jobs:
-  build-cassandra: 
+  build-cassandra:
     runs-on: ubuntu-latest
-    container: cassandra:3.11
+    container:
+      image: cassandra:3.11
     steps:
-      - run: cqlsh --version
-      - uses: actions/checkout@v3
-      - run: 'cqlsh -e "CREATE KEYSPACE test WITH replication = {''class'': ''SimpleStrategy'', ''replication_factor'': 1};"'
-      - run: 'cqlsh -e "CREATE TABLE test.users (id int PRIMARY KEY, name text, age int);"'
-      - run: 'cqlsh -e "INSERT INTO test.users (id, name, age) VALUES (1, ''John'', 30);"'
-      - run: cqlsh -e "SELECT * FROM test.users;"
-      
+      - name: Check cqlsh version
+        run: cqlsh --version
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Create keyspace
+        run: 'cqlsh -e "CREATE KEYSPACE test WITH replication = {''class'': ''SimpleStrategy'', ''replication_factor'': 1};"'
+      - name: Create table
+        run: 'cqlsh -e "CREATE TABLE test.users (id int PRIMARY KEY, name text);"'
+      - name: Insert data
+        run: 'cqlsh -e "INSERT INTO test.users (id, name) VALUES (1, ''John'');"'
+      - name: Select data
+        run: 'cqlsh -e "SELECT * FROM test.users;"'
