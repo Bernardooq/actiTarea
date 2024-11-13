@@ -1,0 +1,14 @@
+on: push
+
+jobs:
+  build-cassandra: 
+    runs-on: ubuntu-latest
+    container: cassandra:3.11
+    steps:
+      - run: cqlsh --version
+      - uses: actions/checkout@v3
+      - run: cqlsh -e "CREATE KEYSPACE test WITH replication = {'class' : 'SimpleStrategy', 'replication_factor' : 1};"
+      - run: cqlsh -e "CREATE TABLE test.users (id int PRIMARY KEY, name text);"
+      - run: cqlsh -e "INSERT INTO test.users (id, name) VALUES (1, 'John');"
+      - run: cqlsh -e "SELECT * FROM test.users;"
+      
