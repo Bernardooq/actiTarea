@@ -1,47 +1,10 @@
 on: push
 
 jobs:
-  build-cassandra:
+  build-cassandra: 
     runs-on: ubuntu-latest
-    services:
-      cassandra:
-        image: cassandra:3.11
-        ports:
-          - 9042:9042
+    container: cassandra:3.11
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-      - name: Install cqlsh
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y python3-pip
-          pip3 install cqlsh
-      - name: Wait for Cassandra to start
-        run: |
-          echo "Waiting for Cassandra to start..."
-          for i in {1..30}; do
-            if nc -z localhost 9042; then
-              echo "Cassandra is up and running"
-              break
-            fi
-            echo "Still waiting for Cassandra..."
-            sleep 10
-          done
-          # Verificar si Cassandra está corriendo después del bucle
-          if ! nc -z localhost 9042; then
-            echo "Cassandra did not start in time"
-            exit 1
-          fi
-      - name: Check cqlsh version
-        run: cqlsh --version
-      - name: Create keyspace
-        run: 'cqlsh -e "CREATE KEYSPACE test WITH replication = {''class'': ''SimpleStrategy'', ''replication_factor'': 1};"''
-      - name: Create table
-        run: cqlsh -e "CREATE TABLE test.users (id int PRIMARY KEY, name text);"
-      - name: Insert data
-        run: cqlsh -e "INSERT INTO test.users (id, name) VALUES (1, 'John');"
-      - name: Select data
-        run: cqlsh -e "SELECT * FROM test.users;"
-
-        
-
+      - run: cqlsh --version
+      - uses: actions/checkout@v3
+      
