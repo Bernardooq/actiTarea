@@ -11,10 +11,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
       - name: Wait for Cassandra to start
-        run: sleep 60
-      - name: Verify Cassandra is running
         run: |
-          cqlsh -e "SELECT now() FROM system.local;"
+          for i in {1..30}; do
+            if cqlsh -e "SELECT now() FROM system.local" > /dev/null 2>&1; then
+              echo "Cassandra is up and running"
+              break
+            fi
+            echo "Waiting for Cassandra..."
+            sleep 5
+          done
       - name: Create keyspace
         run: 'cqlsh -e "CREATE KEYSPACE test WITH replication = {''class'': ''SimpleStrategy'', ''replication_factor'': 1};"'
       - name: Create table
