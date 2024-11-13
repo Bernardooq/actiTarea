@@ -43,3 +43,5 @@ jobs:
       - name: Select data
         run: cqlsh -e "SELECT * FROM test.users;"
 
+        
+
